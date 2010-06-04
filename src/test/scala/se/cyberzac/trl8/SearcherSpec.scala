@@ -9,7 +9,7 @@ object SearcherSpecRunner extends ConsoleRunner(SearcherSpec)
 
 object SearcherSpec extends Specification {
   "Searcher" should {
-    "Do a twitter search on #trl8" in {
+    "Do a twitter search on #se.cyberzac.trl8" in {
       val list = Nil
       list must beEmpty
     }
