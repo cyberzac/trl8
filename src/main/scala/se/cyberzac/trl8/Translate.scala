@@ -1,11 +1,15 @@
+package se.cyberzac.trl8
+
+import util.matching.Regex
+
 /**
  *
  * User: zac
- * Date: 2010-maj-25
- * Time: 00:12:22
+ * Date: 2010-jun-09
+ * Time: 16:01:20
  *
  * Copyright © 2010 Martin Zachrison
- *
+  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   (at your option) any later version.
@@ -19,22 +23,17 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package trl8
-
-import org.testng.annotations.Test
-import org.testng.Assert._
+object translate   {
 
 
-class SearcherTest {
-
-  val searcher = new Searcher
-
-  /**
-   * Verify that the Searcher can yield a search  on #se.cyberzac.trl8
-   */
-  @Test
-  def testSearch: Unit = {
-   val statusLine =  searcher searchTag "Stockholm" // "trl8"
-   assertEquals( statusLine.getStatusCode(),200 )
+  def extractLanguageAndText(text: String) : (String, String)= {
+    val RegExp = """(.*)#trl8\s+(\w*)\s(.*)""".r
+    val RegExp(pre, lang, post) = text
+      (lang, pre+post)
   }
+
+  def translateText(text: String) = {
+    "#Hej världen"
+  }
+
 }

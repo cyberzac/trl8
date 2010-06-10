@@ -32,27 +32,26 @@
             <artifactId>scala-library</artifactId>
             <version>${scala.version}</version>
         </dependency>
+
         <dependency>
-              <groupId>org.slf4j</groupId>
+            <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.version}</version>
         </dependency>
-          <dependency>
-              <groupId>org.slf4j</groupId>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>${slf4j.version}</version>
         </dependency>
-        <!--dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j13</artifactId>
-            <version>1.0.1</version>
-        </dependency-->
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.5</version>
+            <version>4.7</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
@@ -60,12 +59,21 @@
             <scope>test</scope>
             <classifier>jdk15</classifier>
         </dependency>
+
         <dependency>
-            <groupId>org.specs</groupId>
+            <groupId>org.scala-tools.testing</groupId>
             <artifactId>specs</artifactId>
-            <version>1.2.5</version>
+            <version>1.6.2.1</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.scalatest</groupId>
+            <artifactId>scalatest</artifactId>
+            <version>1.0</version>
+            <scope>test</scope>
+        </dependency>
+
         <!--dependency>
       <groupId>org.talkingpuffin</groupId>
       <artifactId>talking-puffin-base</artifactId>
@@ -77,11 +85,18 @@
             <version>3.1</version>
         </dependency>
 
+        <dependency>
+            <groupId>net.liftweb</groupId>
+            <artifactId>lift-json</artifactId>
+            <version>2.0-M5</version>
+        </dependency>
+
         <!--dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
             <version>1.6</version>
         </dependency-->
+
     </dependencies>
 
     <build>

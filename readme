@@ -1,0 +1,8 @@
+This is a simple experiment to learn Scala.
+
+It is a Twitter client that seaches for #trl8 {lang}. The matching
+tweets are translated to {lang} and retweeted.
+
+Have fun
+
+Martin Zachrison
