@@ -3,7 +3,6 @@ package se.cyberzac.trl8
 import se.cyberzac.log.Logging
 import net.liftweb.json.JsonParser._
 import net.liftweb.util.Helpers
-import net.liftweb.json.JsonAST.{JString, JField}
 
 /**
  *
@@ -27,10 +26,11 @@ import net.liftweb.json.JsonAST.{JString, JField}
  */
 
 object Translate extends Rester with Logging {
-  val url = "http://ajax.googleapis.com/ajax/services/language/"
-  val detect = url + "detect?v=1.0&q="
-  val translate = url + "translate?v=1.0&q="
+  val baseUrl = "http://ajax.googleapis.com/ajax/services/language/"
+  val detect = baseUrl + "detect?v=1.0&q="
+  val translate = baseUrl + "translate?v=1.0&q="
   val tag = "#trl8"
+  implicit val formats = net.liftweb.json.DefaultFormats
 
 
   def extractLanguageAndText(text: String): (String, String) = {
@@ -42,20 +42,17 @@ object Translate extends Rester with Logging {
   def translateText(rawText: String): Option[String] = {
     val (to, text) = extractLanguageAndText(rawText)
     val from = identifyLang(text).getOrElse(return None)
-    url2json(translate + Helpers.urlEncode(text) + "&langpair=" + from + "%7C" + to)
+    val url = translate + Helpers.urlEncode(text) + "&langpair=" + from + "%7C" + to
+    extractJsonField(url, "translatedText")
   }
 
   def identifyLang(text: String): Option[String] = {
-    val json = url2json(detect + Helpers.urlEncode(text))
+    extractJsonField(detect + Helpers.urlEncode(text), "language")
+  }
+
+  def extractJsonField(url: String, field: String): Option[String] = {
+    val json = url2json(url)
     val parsed = parse(json.getOrElse(return None))
-    val langs = for {
-        JField("language", JString(lang)) <- parsed
-    } yield lang
-    Some(langs(0))
-    /*
-    implicit val formats = net.liftweb.json.DefaultFormats
-    case class lang(responseData : Map[String, String])
-    return Some(parsed.extract[lang].responseData("language"))
-    */
+    Some((parsed \\ field).extract[String])
   }
 }
