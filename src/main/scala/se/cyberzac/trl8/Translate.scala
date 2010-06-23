@@ -1,10 +1,9 @@
 package se.cyberzac.trl8
 
 import se.cyberzac.log.Logging
-import util.matching.Regex
 import net.liftweb.json.JsonParser._
-import net.liftweb.json.JsonAST.{JInt, JString, JField}
 import net.liftweb.util.Helpers
+import net.liftweb.json.JsonAST.{JString, JField}
 
 /**
  *
@@ -28,10 +27,10 @@ import net.liftweb.util.Helpers
  */
 
 object Translate extends Rester with Logging {
-   val url = "http://ajax.googleapis.com/ajax/services/language"
-   val detect = "detect?v=1.0&q="
-   val translate = "translate?v=1.0&q="
-   val tag = "#trl8"
+  val url = "http://ajax.googleapis.com/ajax/services/language/"
+  val detect = url + "detect?v=1.0&q="
+  val translate = url + "translate?v=1.0&q="
+  val tag = "#trl8"
 
 
   def extractLanguageAndText(text: String): (String, String) = {
@@ -40,20 +39,23 @@ object Translate extends Rester with Logging {
     (lang, pre + post)
   }
 
-  def translateText(rawText: String) = {
+  def translateText(rawText: String): Option[String] = {
     val (to, text) = extractLanguageAndText(rawText)
-    val from = identifyLang(text)
-    val json = url2json(translate + text + "&langpair=" + from + "%7C" + to)
-    json.getOrElse("")
+    val from = identifyLang(text).getOrElse(return None)
+    url2json(translate + Helpers.urlEncode(text) + "&langpair=" + from + "%7C" + to)
   }
 
-  def identifyLang(text: String) {
+  def identifyLang(text: String): Option[String] = {
     val json = url2json(detect + Helpers.urlEncode(text))
-    val parsed = parse(json.getOrElse(""))
-    for{
-      JField("from_user", JString(user)) <- parsed
-      JField("text", JString(text)) <- parsed
-      JField("max_id", JInt(maxId)) <- parsed
-    } {info("Shit")}
+    val parsed = parse(json.getOrElse(return None))
+    val langs = for {
+        JField("language", JString(lang)) <- parsed
+    } yield lang
+    Some(langs(0))
+    /*
+    implicit val formats = net.liftweb.json.DefaultFormats
+    case class lang(responseData : Map[String, String])
+    return Some(parsed.extract[lang].responseData("language"))
+    */
   }
 }

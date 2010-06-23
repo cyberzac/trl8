@@ -30,9 +30,9 @@ object Twitter extends Logging with Rester {
   val url = "http://search.twitter.com/search.json?q="
   var maxId = 0
 
-  def search(what: String) : List[(String, String)] = {
+  def search(what: String): List[(String, String)] = {
 
-    val json = url2json(what)
+    val json = url2json(url + what)
     info("search json {}", json)
 
     val empty = """{"results":[],"max_id":15574022985,"since_id":0,"refresh_url":"?since_id=15574022985&q=%23trl8","results_per_page":15,"page":1,"completed_in":0.014746,"query":"%23trl8"}"""
@@ -40,28 +40,20 @@ object Twitter extends Logging with Rester {
 
     val parsed = parse(json.getOrElse(""));
 
-    for {
+    for{
       JField("from_user", JString(user)) <- parsed
       JField("text", JString(text)) <- parsed
       JField("max_id", JInt(max_id)) <- parsed
     } yield (user, text)
-
-      //
-/*
-      val translated = Translate.translateText(text)
-      retweet(user, translated.getOrElse(""))
-*/
-
-
   }
-
 
 
   def searchTag(what: String) = search("%23" + what)
 
 
-  def retweet(user: String, text: String): Unit = {
-      info("Retweet @ {}:{}", user, text)
+  def retweet(user: String, text: Option[String]): Unit = {
+    val t = text.getOrElse(return)
+    info("Retweet @ {}:{}", user, t)
   }
 
 }

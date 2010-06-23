@@ -9,9 +9,10 @@ import se.cyberzac.log.Logging
  */
 object trl8 extends Application with Logging {
   override def main(args: Array[String]) {
-   val tweets =  Twitter.searchTag(args(0));
-    for {
-      (user, tweet)  <- tweets
+    info("Hello twitter trl8")
+    val tweets = Twitter.searchTag(args(0));
+    for{
+      (user, tweet) <- tweets
       translated = Translate.translateText(tweet)
     } Twitter.retweet(user, translated)
   }

@@ -32,7 +32,7 @@ object TranslateSpecTest extends Specification {
   // object TranslateSpec extends Specification  {
   val rawText = "#Hello #trl8 sv world"
   val extractedText = "#Hello world"
-  val translatedText = "#Hej världen"
+  val translatedText = Some("#Hej världen")
 
   "Translate" should {
 

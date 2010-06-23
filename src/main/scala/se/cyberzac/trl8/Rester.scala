@@ -7,7 +7,7 @@ package se.cyberzac.trl8
  * Time: 14:49:09
  *
  * Copyright © 2010 Martin Zachrison
-  *
+ *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   (at your option) any later version.
@@ -27,23 +27,21 @@ import se.cyberzac.log.Logging
 
 trait Rester extends Logging {
 
-  val url : String
-
-   def url2json(what: String): Option[String] = {
-    val method = new GetMethod(url+what)
+  def url2json(url: String): Option[String] = {
+    val method = new GetMethod(url)
     val client = new HttpClient()
 
     method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false))
 
-    debug("calling " + method.getQueryString)
+    debug("calling {}", url)
     client.executeMethod(method)
     val statusLine = method.getStatusLine()
     val result = method.getResponseBodyAsString
     debug("Result {}, body: {}", statusLine.getStatusCode, result)
-     if (statusLine.getStatusCode == HttpStatus.SC_OK)
-      Some(result)
-     else
-       None
+    if (statusLine.getStatusCode == HttpStatus.SC_OK)
+      return Some(result)
+    info("Failed http access status {}", statusLine.getStatusCode)
+    None
   }
 
 }
