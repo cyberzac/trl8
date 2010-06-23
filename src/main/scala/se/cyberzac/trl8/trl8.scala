@@ -1,13 +1,18 @@
 package trl8
 
+import se.cyberzac.trl8.Translate
+import se.cyberzac.log.Logging
+
 /**
- * Hello world!
+ * Twitter translate and retweet
  *
  */
-object trl8 extends Application {
+object trl8 extends Application with Logging {
   override def main(args: Array[String]) {
-    val searcher = new Searcher();
-    searcher.search(args(0));
-    println("Hello, world!")
+   val tweets =  Twitter.searchTag(args(0));
+    for {
+      (user, tweet)  <- tweets
+      translated = Translate.translateText(tweet)
+    } Twitter.retweet(user, translated)
   }
 }

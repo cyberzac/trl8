@@ -2,7 +2,7 @@ package trl8
 
 import org.testng.annotations.Test
 import org.testng.Assert._
-import log.Logger
+import se.cyberzac.log.Logging
 
 /**
  *
@@ -29,7 +29,7 @@ import log.Logger
  * Object for consuming "non-specific" Twitter feeds, such as the public timeline.
  * Use this to do non-authenticated requests of Twitter feeds.
  */
-class ScitterTest extends Logger {
+class ScitterTest extends Logging {
 
 
   /**

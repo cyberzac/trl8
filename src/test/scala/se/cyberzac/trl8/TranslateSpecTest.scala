@@ -24,21 +24,25 @@ package se.cyberzac.trl8
 import org.specs._
 import org.specs.runner._
 
-class TranslateSpecTest extends Specification {
 
+object TranslateSpecTest extends Specification {
+
+  //object TranslateSpecRunner extends ConsoleRunner(TranslateSpec)
+  //class TranslateSuite extends ScalaTestSuite(TranslateSpec)
+  // object TranslateSpec extends Specification  {
   val rawText = "#Hello #trl8 sv world"
   val extractedText = "#Hello world"
   val translatedText = "#Hej världen"
 
-  "translate" should {
+  "Translate" should {
 
-    "provide translateText" in { translate.translateText(extractedText) must be equalTo(translatedText)}
-
-    "provide extractLangugageAndText" in {
-      val (lang, text) = translate.extractLanguageAndText(rawText)
+    "provide extractLangugageAndText:" in {
+      val (lang, text) = Translate.extractLanguageAndText(rawText)
       "that extracts desired language" in {lang must be equalTo ("sv")}
       "that removes #trl8 sv from the text" in {text must be equalTo (extractedText)}
     }
+
+    "provide translateText() that translates to Swedish" in { Translate.translateText(extractedText) must be equalTo (translatedText)}
 
   }
 }
