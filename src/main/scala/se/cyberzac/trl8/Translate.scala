@@ -25,7 +25,7 @@ import net.liftweb.util.Helpers
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-object Translate extends Rester with Logging {
+object Translate extends RestEngine with Logging {
   val baseUrl = "http://ajax.googleapis.com/ajax/services/language/"
   val detect = baseUrl + "detect?v=1.0&q="
   val translate = baseUrl + "translate?v=1.0&q="
@@ -43,7 +43,9 @@ object Translate extends Rester with Logging {
     val (to, text) = extractLanguageAndText(rawText)
     val from = identifyLang(text).getOrElse(return None)
     val url = translate + Helpers.urlEncode(text) + "&langpair=" + from + "%7C" + to
-    extractJsonField(url, "translatedText")
+    val translated = extractJsonField(url, "translatedText").getOrElse(return None)
+    // Note that Google inserts a space between after a #
+    Some(translated.replace("# ", "#"))
   }
 
   def identifyLang(text: String): Option[String] = {
@@ -51,7 +53,7 @@ object Translate extends Rester with Logging {
   }
 
   def extractJsonField(url: String, field: String): Option[String] = {
-    val json = url2json(url)
+    val json = fetchJson(url)
     val parsed = parse(json.getOrElse(return None))
     Some((parsed \\ field).extract[String])
   }

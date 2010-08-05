@@ -22,12 +22,10 @@ package se.cyberzac.trl8
  */
 
 import org.apache.commons.httpclient._, methods._, params._
-import net.liftweb.util.Helpers
 import se.cyberzac.log.Logging
 
-trait Rester extends Logging {
-
-  def url2json(url: String): Option[String] = {
+trait RestEngine extends Logging {
+  def fetchJson(url: String): Option[String] = {
     val method = new GetMethod(url)
     val client = new HttpClient()
 
@@ -38,10 +36,12 @@ trait Rester extends Logging {
     val statusLine = method.getStatusLine()
     val result = method.getResponseBodyAsString
     debug("Result {}, body: {}", statusLine.getStatusCode, result)
-    if (statusLine.getStatusCode == HttpStatus.SC_OK)
-      return Some(result)
-    info("Failed http access status {}", statusLine.getStatusCode)
-    None
+    return if (statusLine.getStatusCode == HttpStatus.SC_OK) {
+      Some(result)
+    } else {
+      info("Failed http access status {}", statusLine.getStatusCode)
+      None
+    }
   }
 
 }

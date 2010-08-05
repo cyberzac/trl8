@@ -23,16 +23,16 @@ package trl8
 import net.liftweb.json.JsonAST.{JInt, JField, JString}
 import net.liftweb.json.JsonParser._
 import se.cyberzac.log.Logging
-import se.cyberzac.trl8.Rester
+import se.cyberzac.trl8.RestEngine
 
 
-object Twitter extends Logging with Rester {
+object Twitter extends Logging with RestEngine {
   val url = "http://search.twitter.com/search.json?q="
   var maxId = 0
 
   def search(what: String): List[(String, String)] = {
 
-    val json = url2json(url + what)
+    val json = fetchJson(url + what)
     info("search json {}", json)
 
     val empty = """{"results":[],"max_id":15574022985,"since_id":0,"refresh_url":"?since_id=15574022985&q=%23trl8","results_per_page":15,"page":1,"completed_in":0.014746,"query":"%23trl8"}"""
@@ -56,4 +56,13 @@ object Twitter extends Logging with Rester {
     info("Retweet @ {}:{}", user, t)
   }
 
+}
+
+class Twitter(val user: String, val passwd: String) extends Logging with RestEngine {
+  val url = "http://api.twitter.com/1/statuses/update.format"
+
+  def retweet(tweeter: String, tweet: Option[String]): Unit = {
+    info("Do twwet @{}:{}", tweeter, tweet.getOrElse(return))
+
+  }
 }
