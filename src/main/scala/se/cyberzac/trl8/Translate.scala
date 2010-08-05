@@ -1,9 +1,3 @@
-package se.cyberzac.trl8
-
-import se.cyberzac.log.Logging
-import net.liftweb.json.JsonParser._
-import net.liftweb.util.Helpers
-
 /**
  *
  * User: zac
@@ -24,6 +18,13 @@ import net.liftweb.util.Helpers
  *   You should have received a copy of the GNU General Public License
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+package se.cyberzac.trl8
+
+import se.cyberzac.log.Logging
+import net.liftweb.json.JsonParser._
+import net.liftweb.util.Helpers
+
 
 object Translate extends RestEngine with Logging {
   val baseUrl = "http://ajax.googleapis.com/ajax/services/language/"
