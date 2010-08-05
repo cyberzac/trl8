@@ -35,7 +35,7 @@ object TranslateSpecTest extends Specification {
   "Translate" should {
 
     "provide extractLangugageAndText" in {
-      val (lang, text) = Translate.extractLanguageAndText(rawText)
+      val Some((lang, text)) = Translate.extractLanguageAndText(rawText)
       "that extracts desired language" in {lang must be equalTo ("sv")}
       "that removes #trl8 sv from the text" in {text must be equalTo (extractedText)}
     }

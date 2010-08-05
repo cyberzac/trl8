@@ -18,8 +18,8 @@
     </facet>
   </component>
   <component name="NewModuleRootManager" inherit-compiler-output="false">
-    <output url="file://$USER_HOME$/IdeaProjects/TwitterTr/target/classes" />
-    <output-test url="file://$USER_HOME$/IdeaProjects/TwitterTr/target/test-classes" />
+    <output url="file://$MODULE_DIR$/target/scala_2.7.7/classes" />
+    <output-test url="file://$MODULE_DIR$/target/scala_2.7.7/test-classes" />
     <content url="file://$USER_HOME$/IdeaProjects/TwitterTr">
       <sourceFolder url="file://$USER_HOME$/IdeaProjects/TwitterTr/src/main/resources" isTestSource="false" />
       <sourceFolder url="file://$USER_HOME$/IdeaProjects/TwitterTr/src/main/scala" isTestSource="false" />

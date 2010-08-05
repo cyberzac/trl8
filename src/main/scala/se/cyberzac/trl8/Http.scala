@@ -23,18 +23,20 @@ package se.cyberzac.trl8
 
 import org.apache.commons.httpclient._, methods._, params._
 import se.cyberzac.log.Logging
+import io.Source
 
-trait RestEngine extends Logging {
-  def fetchJson(url: String): Option[String] = {
+object Http extends Logging {
+  val client = new HttpClient()
+
+  def get(url: String): Option[String] = {
     val method = new GetMethod(url)
-    val client = new HttpClient()
 
     method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(3, false))
 
-    debug("calling {}", url)
+    debug("get {}", url)
     client.executeMethod(method)
     val statusLine = method.getStatusLine()
-    val result = method.getResponseBodyAsString
+    val result = Source.fromInputStream(method.getResponseBodyAsStream).getLines.mkString
     debug("Result {}, body: {}", statusLine.getStatusCode, result)
     return if (statusLine.getStatusCode == HttpStatus.SC_OK) {
       Some(result)
@@ -42,6 +44,13 @@ trait RestEngine extends Logging {
       info("Failed http access status {}", statusLine.getStatusCode)
       None
     }
+  }
+
+  def post(url: String, message: String) = {
+    debug("post {}:{}", url, message)
+    val method = new PostMethod(url)
+    method.setRequestBody(message)
+    client.executeMethod(method)
   }
 
 }

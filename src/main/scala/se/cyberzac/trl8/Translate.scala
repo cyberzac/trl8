@@ -26,7 +26,7 @@ import net.liftweb.json.JsonParser._
 import net.liftweb.util.Helpers
 
 
-object Translate extends RestEngine with Logging {
+object Translate extends Logging {
   val baseUrl = "http://ajax.googleapis.com/ajax/services/language/"
   val detect = baseUrl + "detect?v=1.0&q="
   val translate = baseUrl + "translate?v=1.0&q="
@@ -34,17 +34,22 @@ object Translate extends RestEngine with Logging {
   implicit val formats = net.liftweb.json.DefaultFormats
 
 
-  def extractLanguageAndText(text: String): (String, String) = {
-    val RegExp = ("""(.*)""" + tag + """\s+(\w*)\s*(.*)""").r
-    val RegExp(pre, lang, post) = text
-    (lang, pre + post)
+  def extractLanguageAndText(text: String): Option[(String, String)] = {
+    val RegExp = ("""(.*)""" + tag + """\s*(\w*)\s*(.*)""").r
+    try {
+      val RegExp(pre, lang, post) = text
+      Some(lang, pre + post)
+    } catch {
+      case me: MatchError => None
+    }
   }
 
   def translateText(rawText: String): Option[String] = {
-    val (to, text) = extractLanguageAndText(rawText)
+    val (to, text) = extractLanguageAndText(rawText).getOrElse(return None)
     val from = identifyLang(text).getOrElse(return None)
     val url = translate + Helpers.urlEncode(text) + "&langpair=" + from + "%7C" + to
     val translated = extractJsonField(url, "translatedText").getOrElse(return None)
+    debug("Language is {}, translated text is {}", from, translated)
     // Note that Google inserts a space between after a #
     Some(translated.replace("# ", "#"))
   }
@@ -54,8 +59,14 @@ object Translate extends RestEngine with Logging {
   }
 
   def extractJsonField(url: String, field: String): Option[String] = {
-    val json = fetchJson(url)
+    val json = Http.get(url)
     val parsed = parse(json.getOrElse(return None))
-    Some((parsed \\ field).extract[String])
+    val status = (parsed \\ "responseStatus").extract[String]
+    if (status == "200") {
+      Some((parsed \\ field).extract[String])
+    } else {
+      None
+    }
+
   }
 }
