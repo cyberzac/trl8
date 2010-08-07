@@ -23,11 +23,7 @@ package se.cyberzac.trl8
 
 import org.specs._
 
-object TranslateSpecTest extends Specification {
-
-  //object TranslateSpecRunner extends ConsoleRunner(TranslateSpec)
-  //class TranslateSuite extends ScalaTestSuite(TranslateSpec)
-  // object TranslateSpec extends Specification  {
+object TranslateSpec extends Specification {
   val rawText = "#Hello #trl8 sv world"
   val extractedText = "#Hello world"
   val translatedText = Some("#Hej världen")

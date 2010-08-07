@@ -76,11 +76,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!--dependency>
-      <groupId>org.talkingpuffin</groupId>
-      <artifactId>talking-puffin-base</artifactId>
-      <version>0.79b-devel</version>
-        </dependency-->
         <dependency>
             <groupId>commons-httpclient</groupId>
             <artifactId>commons-httpclient</artifactId>
@@ -99,11 +94,12 @@
             <version>${lift.version}</version>
         </dependency>
 
-        <!--dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-            <version>1.6</version>
-        </dependency-->
+        <dependency>
+            <groupId>oauth.signpost</groupId>
+            <artifactId>signpost-commonshttp4</artifactId>
+            <version>1.2</version>
+        </dependency>
+
 
     </dependencies>
 
