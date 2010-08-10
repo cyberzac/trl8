@@ -23,6 +23,7 @@ package se.cyberzac.trl8
 import net.liftweb.json.JsonAST.{JInt, JField, JString}
 import net.liftweb.json.JsonParser._
 import se.cyberzac.log.Logging
+import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer
 
 
 object Twitter extends Logging {
@@ -52,7 +53,14 @@ object Twitter extends Logging {
 }
 
 class Twitter(val user: String, val password: String) extends Logging {
-  val http = Http(user, password, "twitter.com")
+  /* OAuth stuff */
+  val ConsumerKey = "1uNTJAjT2JDQ44DcF1qZQ"
+  val ConsumerSecret = "h5KcPmhZiazErTHf25hWqxyVsN9YBplY7qa9mzkJE"
+  val accessToken = "148650405-AQIH2L6mhA3BUlctYf4N0HFdFyrwItWRi3TarY9y"
+  val tokenSecret = "alkfZfxURIh8enptBngADxiqI2OOC3rV6xktcZixgU"
+  val consumer = new CommonsHttpOAuthConsumer(ConsumerKey, ConsumerSecret)
+  consumer.setTokenWithSecret(accessToken, tokenSecret)
+  val http = Http(consumer)
 
   def retweet(tweeter: String, id: BigInt, tweet: Option[String]): Unit = {
     if (tweet.isEmpty) {
