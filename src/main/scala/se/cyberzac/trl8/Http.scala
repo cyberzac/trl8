@@ -27,7 +27,8 @@ import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer
 import org.apache.http._
 import client.methods.{HttpUriRequest, HttpGet, HttpPost}
 import entity.StringEntity
-import impl.client.{DefaultHttpClient, DefaultHttpRequestRetryHandler}
+import impl.client.{DefaultHttpClient}
+import params.CoreProtocolPNames
 
 object Http extends Logging {
   val http = new Http()
@@ -37,16 +38,15 @@ object Http extends Logging {
   def post(url: String, body: String) = http.post(url: String, body: String)
 
   def apply(oauthConsumer: CommonsHttpOAuthConsumer) = {
-    new Http((method: HttpPost) => oauthConsumer.sign(method))
+    new Http((method: HttpUriRequest) => oauthConsumer.sign(method))
   }
 }
 
-class Http(val prePost: (HttpPost) => Unit) extends Logging {
+class Http(val preExecute: (HttpUriRequest) => Unit) extends Logging {
   val client = new DefaultHttpClient()
-  client.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(3, true))
 
   def this() = {
-    this ((method: HttpPost) => {})
+    this ((request: HttpUriRequest) => {})
   }
 
 
@@ -56,15 +56,16 @@ class Http(val prePost: (HttpPost) => Unit) extends Logging {
     execute(method)
   }
 
-  def post(url: String, body: String) = {
+  def post(url: String, body: String) : Option[String] = {
     debug("post {}:{}", url, body)
     val method = new HttpPost(url)
     method.setEntity(new StringEntity(body))
-    prePost(method)
+    method.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
     execute(method)
   }
 
   private def execute(request: HttpUriRequest) = {
+    preExecute(request)
     val response = client.execute(request)
     val statusLine = response.getStatusLine()
     val result = Source.fromInputStream(response.getEntity.getContent).getLines.mkString

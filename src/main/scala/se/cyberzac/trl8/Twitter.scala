@@ -24,35 +24,9 @@ import net.liftweb.json.JsonAST.{JInt, JField, JString}
 import net.liftweb.json.JsonParser._
 import se.cyberzac.log.Logging
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer
-
+import net.liftweb.util.Helpers
 
 object Twitter extends Logging {
-  val url = "http://search.twitter.com/search.json?q="
-
-
-  def search(what: String): List[(String, BigInt, String)] = {
-
-    val json = Http.get(url + what)
-    debug("search json {}", json)
-
-
-    val parsed = parse(json.getOrElse(""));
-
-    for{
-      JField("from_user", JString(user)) <- parsed
-      JField("text", JString(text)) <- parsed
-      JField("id", JInt(id)) <- parsed
-    } yield (user, id, text)
-  }
-
-
-  def searchTag(what: String) = search("%23" + what)
-
-  def apply(user: String, password: String) = new Twitter(user, password)
-
-}
-
-class Twitter(val user: String, val password: String) extends Logging {
   /* OAuth stuff */
   val ConsumerKey = "1uNTJAjT2JDQ44DcF1qZQ"
   val ConsumerSecret = "h5KcPmhZiazErTHf25hWqxyVsN9YBplY7qa9mzkJE"
@@ -62,23 +36,32 @@ class Twitter(val user: String, val password: String) extends Logging {
   consumer.setTokenWithSecret(accessToken, tokenSecret)
   val http = Http(consumer)
 
-  def retweet(tweeter: String, id: BigInt, tweet: Option[String]): Unit = {
-    if (tweet.isEmpty) {
-      info("Skipping {}", id)
-      return
-    }
+
+  def search(what: String, since : BigInt): List[(String, Long, String)] = {
+    val url = "http://search.twitter.com/search.json?q="
+    val json = http.get(url + what+"&since_id="+since)
+    val parsed = parse(json.getOrElse(""));
+
+    for {
+      JField("from_user", JString(user)) <- parsed
+      JField("text", JString(text)) <- parsed
+      JField("id", JInt(id)) <- parsed
+    } yield (user, id.longValue, text)
+  }
+
+
+  def searchTag(what: String, since : BigInt) = search("%23" + what, since)
+
+  def tweet(tweet: String) : Option[String] = {
+
     //val json = JsonAST.render("@" + tweeter + " " + tweet.get)
     // Http.post(url + "/" + id + ".json", json)
     val xml = <status>
-      <text>@
-        {tweeter}{tweet.get}
-      </text>
+      <status>
+       {tweet}
+      </status>
     </status>
-    http.post("http://api.twitter.com/1/statuses/retweet" + "/" + id + ".xml", xml.toString)
-  }
-
-  def verifyCredentials: Boolean = {
-    http.get("http://twitter.com/help/test.xml").isDefined
+    http.post("http://api.twitter.com/1/statuses/update.xml?status="+Helpers.urlEncode(tweet), xml.toString)
   }
 
 }
