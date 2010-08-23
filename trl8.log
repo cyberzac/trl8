@@ -1,0 +1,50 @@
+[0m[[0minfo[0m] [0mBuilding project trl8 1.0 against Scala 2.7.7[0m
+[0m[[0minfo[0m] [0m   using TwitterTrl8Project with sbt 0.7.4 and Scala 2.7.7[0m
+[0m[[0minfo[0m] [34m[0m
+[0m[[0minfo[0m] [34m== copy-resources ==[0m
+[0m[[0minfo[0m] [34m== copy-resources ==[0m
+[0m[[0minfo[0m] [34m[0m
+[0m[[0minfo[0m] [34m== compile ==[0m
+[0m[[0minfo[0m] [0m  Source analysis: 1 new/modified, 0 indirectly invalidated, 0 removed.[0m
+[0m[[0minfo[0m] [0mCompiling main sources...[0m
+[0m[[0minfo[0m] [0mCompilation successful.[0m
+[0m[[0minfo[0m] [0m  Post-analysis: 35 classes.[0m
+[0m[[0minfo[0m] [34m== compile ==[0m
+[0m[[0minfo[0m] [34m[0m
+[0m[[0minfo[0m] [34m== run ==[0m
+[0m[[0minfo[0m] [0mRunning se.cyberzac.trl8.trl8 [0m
+log4j: Threshold ="null".
+log4j: Retreiving an instance of org.apache.log4j.Logger.
+log4j: Setting [se.cyberzac] additivity to [true].
+log4j: Level value for se.cyberzac is  [debug].
+log4j: se.cyberzac level set to DEBUG
+log4j: Level value for root is  [info].
+log4j: root level set to INFO
+log4j: Class name: [org.apache.log4j.ConsoleAppender]
+log4j: Parsing layout of class: "org.apache.log4j.PatternLayout"
+log4j: Setting property [conversionPattern] to [%d %-5p [%t] %20c{1} - %m%n].
+log4j: Adding appender named [console] to category [root].
+2010-08-11 12:20:47,047 INFO  [run-main]                trl8$ - Hello twitter trl8
+java.lang.ArrayIndexOutOfBoundsException: 0
+	at se.cyberzac.trl8.trl8$$anonfun$main$1.apply(trl8.scala:35)
+	at se.cyberzac.trl8.trl8$$anonfun$main$1.apply(trl8.scala:34)
+	at scala.Range.foreach(Range.scala:44)
+	at se.cyberzac.trl8.trl8$.main(trl8.scala:34)
+	at se.cyberzac.trl8.trl8.main(trl8.scala)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at sbt.Run.run0(Run.scala:60)
+	at sbt.Run.execute$1(Run.scala:47)
+	at sbt.Run$$anonfun$run$2.apply(Run.scala:50)
+	at sbt.Run$$anonfun$run$2.apply(Run.scala:50)
+	at sbt.TrapExit$.executeMain$1(TrapExit.scala:33)
+	at sbt.TrapExit$$anon$1.run(TrapExit.scala:42)
+[0m[[0minfo[0m] [34m== run ==[0m
+[0m[[31merror[0m] [0mError running run: Nonzero exit code: 1[0m
+[0m[[0minfo[0m] [0m[0m
+[0m[[0minfo[0m] [0mTotal time: 3 s, completed 2010-aug-11 12:20:47[0m
+[0m[[0minfo[0m] [0m[0m
+[0m[[0minfo[0m] [0mTotal session time: 4 s, completed 2010-aug-11 12:20:47[0m
+[0m[[31merror[0m] [0mError during build.[0m

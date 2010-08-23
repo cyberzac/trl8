@@ -1,8 +1,8 @@
 import sbt._
 
 class TwitterTrl8Project(info: ProjectInfo) extends DefaultProject(info) {
-  //val mavenLocal = "Local Maven Repository" at "file://"+Path.userHome+"/.m2/repository"
-
+  val mavenLocal = "Local Maven Repository" at "file://"+Path.userHome+"/.m2/repository"
+  /*
   val junit = "junit" % "junit" % "4.7" % "test"
   val testng = "org.testng" % "testng" % "5.12.1" % "test"
   val specs = "org.scala-tools.testing" % "specs" % "1.6.2.1" % "test"
@@ -17,5 +17,7 @@ class TwitterTrl8Project(info: ProjectInfo) extends DefaultProject(info) {
   val lift_util = "net.liftweb" % "lift-util" % lift_version
 
   val oauth = "oauth.signpost" % "signpost-commonshttp4" % "1.2"
+
+  */
 }
 
