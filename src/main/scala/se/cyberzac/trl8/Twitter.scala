@@ -20,10 +20,11 @@
  */
 package se.cyberzac.trl8
 
-import net.liftweb.json.JsonAST.{JInt, JField, JString}
 import net.liftweb.json.JsonParser._
 import se.cyberzac.log.Logging
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer
+import java.net.URL
+import io.Source
 import net.liftweb.util.Helpers
 
 object Twitter extends Logging {
@@ -34,34 +35,45 @@ object Twitter extends Logging {
   val tokenSecret = "alkfZfxURIh8enptBngADxiqI2OOC3rV6xktcZixgU"
   val consumer = new CommonsHttpOAuthConsumer(ConsumerKey, ConsumerSecret)
   consumer.setTokenWithSecret(accessToken, tokenSecret)
-  val http = Http(consumer)
+  // val http = Http(consumer)
+  val url = new URL("http://stream.twitter.com/1/statuses/filter.json")
+  val httpReader = Http(url.getHost, "trl8", "deheafy")
+  val httpWriter = Http(consumer)
+  lazy val searchStream = httpReader.postStream("http://stream.twitter.com/1/statuses/filter.json?track=trl8", "")
+  implicit val formats = net.liftweb.json.DefaultFormats
 
 
-  def search(what: String, since : BigInt): List[(String, Long, String)] = {
-    val url = "http://search.twitter.com/search.json?q="
-    val json = http.get(url + what+"&since_id="+since)
-    val parsed = parse(json.getOrElse(""));
-
-    for {
-      JField("from_user", JString(user)) <- parsed
-      JField("text", JString(text)) <- parsed
-      JField("id", JInt(id)) <- parsed
-    } yield (user, id.longValue, text)
+  def search(): List[(String, String)] = {
+    val source = Source.fromInputStream(searchStream.getOrElse(return List.empty))
+    source.getLines.foreach(translateAndTweet)
+    List.empty
   }
 
+  private def translateAndTweet(line: String): Unit = {
+    if (line.isEmpty) return
+    debug("search got:" + line)
+    val json = parse(line)
+    val user = (json \ "user" \ "screen_name").extract[String]
+    val text = (json \ "text").extract[String]
+    var translated = Translate.translateText(text)
+    if (translated.isDefined) {
+      var translation = translated.get
+      debug("Translated {}: {} -> {}", user, text, translation)
+      tweet("@" + user + " " + translation)
+    }
 
-  def searchTag(what: String, since : BigInt) = search("%23" + what, since)
+  }
 
-  def tweet(tweet: String) : Option[String] = {
-
-    //val json = JsonAST.render("@" + tweeter + " " + tweet.get)
-    // Http.post(url + "/" + id + ".json", json)
+  def tweet(tweet: String): Unit = {
+    debug("Tweeting: {}", tweet)
     val xml = <status>
       <status>
-       {tweet}
+        {tweet}
       </status>
     </status>
-    http.post("http://api.twitter.com/1/statuses/update.xml?status="+Helpers.urlEncode(tweet), xml.toString)
+    httpWriter.post("http://api.twitter.com/1/statuses/update.xml?status=" + Helpers.urlEncode(tweet), xml.toString)
+    debug("Translated tweeted ok")
   }
 
 }
+

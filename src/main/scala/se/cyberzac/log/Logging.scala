@@ -24,6 +24,7 @@ package se.cyberzac.log
 import org.slf4j.LoggerFactory
 
 trait Logging {
+
   private val log = LoggerFactory.getLogger(getClass)
 
   def trace(message: String, values: Any*) = log.trace(message, values.map(_.asInstanceOf[Object]).toArray)

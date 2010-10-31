@@ -1,0 +1,12 @@
+;; This config was generated using ensime-config-gen. Feel free to customize its contents manually. 
+
+(
+
+:server-root "/Users/zac/.emacs.d/ensime"
+
+:project-package "se.cyberzac.trl8"
+
+:use-sbt t
+
+:target "target"
+)

@@ -38,9 +38,9 @@ object Translate extends Logging {
     val RegExp = ("""(.*)""" + tag + """\s*(\w*)\s*(.*)""").r
     try {
       val RegExp(pre, lang, post) = text
-      Some(lang, pre + post)
+      Some((lang, pre + post))
     } catch {
-      case me: MatchError => None
+      case _ => None
     }
   }
 
@@ -50,7 +50,7 @@ object Translate extends Logging {
     val url = translate + Helpers.urlEncode(text) + "&langpair=" + from + "%7C" + to
     val translated = extractJsonField(url, "translatedText").getOrElse(return None)
     debug("Language is {}, translated text is {}", from, translated)
-    // Note that Google inserts a space between after a #
+    // Note that Google inserts a space after a #
     Some(translated.replace("# ", "#"))
   }
 
@@ -60,7 +60,7 @@ object Translate extends Logging {
 
   def extractJsonField(url: String, field: String): Option[String] = {
     val json = Http.get(url)
-    val parsed = parse(json.getOrElse(return None))
+    val parsed = parse(json)
     val status = (parsed \\ "responseStatus").extract[String]
     if (status == "200") {
       Some((parsed \\ field).extract[String])

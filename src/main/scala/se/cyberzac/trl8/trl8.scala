@@ -24,35 +24,26 @@ package se.cyberzac.trl8
 import se.cyberzac.log.Logging
 
 /**
- * Twitter translate and tweet
+ * Twitter translate and line
  *
  */
 object trl8 extends Application with Logging {
   override def main(args: Array[String]) {
     info("Hello twitter trl8")
-    var lastId = 0L
-    for (i <- 1 to 240) {
-      lastId = searchAndTranslate(args(0), lastId)
-      Thread.sleep(60*1000)
-    }
+    searchAndTranslate()
   }
 
-  def searchAndTranslate(tag: String, since: Long) = {
-    val tweets = Twitter.searchTag(tag, since)
-    var maxId = since
-    var ids  = List(0L)
+  def searchAndTranslate() = {
+    val tweets = Twitter.search
     tweets.foreach {
       tweet =>
-        val (tweeter, id, text) = tweet
+        val (tweeter, text) = tweet
         var translated = Translate.translateText(text)
-        if (translated.isDefined && ! ids.contains(ids)) {
-          debug("Handling {} {}, {}", (id, tweeter, text))
+        if (translated.isDefined) {
+          debug("Handling {}, {}", tweeter, text)
           Twitter.tweet("@"+tweeter+" "+translated.get)
-          ids = List(id) ::: ids
         }
-      maxId = Math.max(id, maxId)
     }
-    Math.max(maxId, since)
   }
 
 }
