@@ -50,8 +50,8 @@ object Translate extends Logging {
     val url = translate + Helpers.urlEncode(text) + "&langpair=" + from + "%7C" + to
     val translated = extractJsonField(url, "translatedText").getOrElse(return None)
     debug("Language is {}, translated text is {}", from, translated)
-    // Note that Google inserts a space after a #
-    Some(translated.replace("# ", "#"))
+    // Note that Google inserts a space after a # and a @
+    Some(translated.replace("# ", "#").replace("@ ", "@"))
   }
 
   def identifyLang(text: String): Option[String] = {
