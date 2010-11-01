@@ -8,6 +8,11 @@
   </component>
   <component name="FacetAutodetectingManager">
     <autodetection-disabled>
+      <facet-type id="scala">
+        <modules>
+          <module name="trl8" />
+        </modules>
+      </facet-type>
       <facet-type id="Scala">
         <modules>
           <module name="trl8" />
