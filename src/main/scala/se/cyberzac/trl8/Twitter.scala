@@ -23,9 +23,9 @@ package se.cyberzac.trl8
 import net.liftweb.json.JsonParser._
 import se.cyberzac.log.Logging
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer
-import java.net.URL
 import io.Source
 import net.liftweb.util.Helpers
+import java.net.{URI}
 
 object Twitter extends Logging {
   /* OAuth stuff */
@@ -35,43 +35,40 @@ object Twitter extends Logging {
   val tokenSecret = "alkfZfxURIh8enptBngADxiqI2OOC3rV6xktcZixgU"
   val consumer = new CommonsHttpOAuthConsumer(ConsumerKey, ConsumerSecret)
   consumer.setTokenWithSecret(accessToken, tokenSecret)
-  // val http = Http(consumer)
-  val url = new URL("http://stream.twitter.com/1/statuses/filter.json")
-  val httpReader = Http(url.getHost, "trl8", "deheafy")
+
+  val uri = new URI("http://stream.twitter.com/1/statuses/filter.json?track=trl8")
+  val httpReader = Http(uri.getHost, "trl8", "deheafy")
   val httpWriter = Http(consumer)
-  lazy val searchStream = httpReader.postStream("http://stream.twitter.com/1/statuses/filter.json?track=trl8", "")
+  lazy val searchStream = httpReader.postStream(uri, "")
   implicit val formats = net.liftweb.json.DefaultFormats
 
 
-  def search(): List[(String, String)] = {
-    val source = Source.fromInputStream(searchStream.getOrElse(return List.empty))
-    source.getLines.foreach(translateAndTweet)
-    List.empty
+  def searchAndTranslate(): Unit = {
+    val source = Source.fromInputStream(searchStream.getOrElse(return))
+    for{tweet <- source.getLines
+        if (!tweet.isEmpty)
+    } {translateAndTweet(tweet)}
   }
 
-  private def translateAndTweet(line: String): Unit = {
-    if (line.isEmpty) return
-    debug("search got:" + line)
-    val json = parse(line)
+  private def translateAndTweet(tweet: String): Unit = {
+    debug("search got:" + tweet)
+    val json = parse(tweet)
     val user = (json \ "user" \ "screen_name").extract[String]
     val text = (json \ "text").extract[String]
-    var translated = Translate.translateText(text)
-    if (translated.isDefined) {
-      var translation = translated.get
-      debug("Translated {}: {} -> {}", user, text, translation)
-      tweet("@" + user + " " + translation)
-    }
-
+    var someTranslatation = Translate.translateText(text)
+    var translation = someTranslatation.getOrElse({warn("No translation found for: " + text); return})
+    debug("Translated {}: {} -> {}", user, text, translation)
+    tweetText("@" + user + " " + translation)
   }
 
-  def tweet(tweet: String): Unit = {
-    debug("Tweeting: {}", tweet)
+  def tweetText(text: String): Unit = {
+    debug("Tweeting: {}", text)
     val xml = <status>
       <status>
-        {tweet}
+        {text}
       </status>
     </status>
-    httpWriter.post("http://api.twitter.com/1/statuses/update.xml?status=" + Helpers.urlEncode(tweet), xml.toString)
+    httpWriter.post("http://api.twitter.com/1/statuses/update.xml?status=" + Helpers.urlEncode(text), xml.toString)
     debug("Translated tweeted ok")
   }
 

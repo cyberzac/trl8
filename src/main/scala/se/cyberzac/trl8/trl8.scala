@@ -30,20 +30,7 @@ import se.cyberzac.log.Logging
 object trl8 extends Application with Logging {
   override def main(args: Array[String]) {
     info("Hello twitter trl8")
-    searchAndTranslate()
-  }
-
-  def searchAndTranslate() = {
-    val tweets = Twitter.search
-    tweets.foreach {
-      tweet =>
-        val (tweeter, text) = tweet
-        var translated = Translate.translateText(text)
-        if (translated.isDefined) {
-          debug("Handling {}, {}", tweeter, text)
-          Twitter.tweet("@"+tweeter+" "+translated.get)
-        }
-    }
+    Twitter searchAndTranslate
   }
 
 }

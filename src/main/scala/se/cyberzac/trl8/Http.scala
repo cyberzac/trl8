@@ -25,17 +25,13 @@ import se.cyberzac.log.Logging
 import scala.io.Source
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer
 import org.apache.http._
-import auth.{UsernamePasswordCredentials, AuthScope, AuthState}
+import auth.{UsernamePasswordCredentials, AuthScope}
 import client.methods.{HttpUriRequest, HttpGet, HttpPost}
-import client.{ResponseHandler, CredentialsProvider}
 import entity.StringEntity
-import impl.auth.BasicScheme
 import impl.client.DefaultHttpClient
-import client.protocol.ClientContext
-import protocol.{ExecutionContext, HttpContext}
 import params.CoreProtocolPNames
 import java.io.InputStream
-import java.util.Date
+import java.net.URI
 
 
 object Http extends Logging {
@@ -52,41 +48,10 @@ object Http extends Logging {
 
   def apply(domain: String, user: String, password: String) = {
     val http = new Http()
-
     http.client.getCredentialsProvider.setCredentials(
       new AuthScope(domain, AuthScope.ANY_PORT),
       new UsernamePasswordCredentials(user, password)
       )
-
-
-    val preemptiveAuth = new HttpRequestInterceptor() {
-      def process(request: HttpRequest, context: HttpContext) = {
-        val authState = context.getAttribute(ClientContext.TARGET_AUTH_STATE) match {
-          case as: AuthState => as
-          case _ => throw new Exception("Bad shit")
-        }
-
-        val credsProvider = context.getAttribute(ClientContext.CREDS_PROVIDER) match {
-          case cp: CredentialsProvider => cp
-          case _ => throw new Exception("Bad shit")
-        }
-
-        val targetHost = context.getAttribute(ExecutionContext.HTTP_TARGET_HOST) match {
-          case hh: HttpHost => hh
-          case _ => throw new Exception("Bad shit")
-        }
-
-        if (authState.getAuthScheme() == null) {
-          val authScope = new AuthScope(targetHost.getHostName(), targetHost.getPort())
-          val creds = credsProvider.getCredentials(authScope)
-          if (creds != null) {
-            authState.setAuthScheme(new BasicScheme())
-            authState.setCredentials(creds)
-          }
-        }
-      }
-    }
-  //  http.client.addRequestInterceptor(preemptiveAuth, 0)
     http
   }
 }
@@ -94,53 +59,26 @@ object Http extends Logging {
 
 class Http(val preExecute: (HttpUriRequest) => Unit) extends Logging {
   val client = new DefaultHttpClient()
- /* val responseHandler = new ResponseHandler[String]() {
-    def handleResponse(response: HttpResponse) = {
-
-    }
-  }
-  */
 
   def this() = {
     this ((request: HttpUriRequest) => {})
   }
 
-  def closeStream(stream:Stream[Byte]) = {
-   // stream close
-  }
 
   def get(url: String): String = {
-    val stream = getInternal(url).getOrElse(return "")
+    val method = new HttpGet(url)
+    val stream = execute(method).getOrElse(return "")
     Source.fromInputStream(stream).getLines.mkString
   }
 
-
-  def getStream(url: String): Source = {
-    val ioStream = getInternal(url).getOrElse(return Source.fromString(""))
-    val source = Source.fromInputStream(ioStream)
-    source
-   // Stream.continually(source.takeWhile(_ != -1).map(_.toByte).toString)
-  }
-
-  private def getInternal(url: String): Option[InputStream] = {
-    val method = new HttpGet(url)
-    execute(method)
-  }
 
   def post(url: String, body: String): String = {
-    val stream = postInternal(url, body).getOrElse(return "")
+    val stream = postStream(new URI(url), body).getOrElse(return "")
     Source.fromInputStream(stream).getLines.mkString
   }
 
-  def postStream(url: String, body: String): Option[InputStream] = {
-    postInternal(url, body)
-   //  val stream = postInternal(url, body).getOrElse(return Stream.empty)
-    // val stream = postInternal(url, body).getOrElse(return Stream.empty)
-   // stream
-  // Stream.continually(stream.read).takeWhile(_ != -1).map(_.toByte)
-  }
 
-  private def postInternal(url: String, body: String): Option[InputStream] = {
+  def postStream(url: URI, body: String): Option[InputStream] = {
     val method = new HttpPost(url)
     method.setEntity(new StringEntity(body))
     method.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
