@@ -42,7 +42,7 @@ object Http extends Logging {
   def post(url: String, body: String) = http.post(url: String, body: String)
 
   def apply(oauthConsumer: CommonsHttpOAuthConsumer) = {
-    new Http((method: HttpUriRequest) => oauthConsumer.sign(method))
+    new Http((request: HttpUriRequest) => oauthConsumer.sign(request))
   }
 
 

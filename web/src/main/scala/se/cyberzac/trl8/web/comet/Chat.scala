@@ -7,7 +7,7 @@ package se.cyberzac.trl8.web.comet
  * Time: 22:24:14
  *
  * Copyright © 2010 Mads Hartmann Jensen, David Pollak
-  *
+ *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   (at your option) any later version.
@@ -24,41 +24,50 @@ package se.cyberzac.trl8.web.comet
 import net.liftweb._
 import http._
 import actor._
+import se.cyberzac.trl8.{Twitter}
 
 object ChatServer extends LiftActor with ListenerManager {
+  private var messages = List("Welcome")
 
- private var messages = List("Welcome")
+  Twitter.searchAndAct((s: String) => {
+    messages ::= s;
+    updateListeners()
+  }
+    )
 
- def createUpdate = messages
 
- override def lowPriority = {
- case s: String => messages ::= s ; updateListeners()
- }
+
+  def createUpdate = messages
+
+  override def lowPriority = {
+    case s: String => {
+      val tweet = s + " #trl8 de"
+      Twitter.tweetText(tweet)
+      //messages ::= Translate.translateText(tweet).getOrElse("no translate for you");
+
+    }
+  }
 }
 
 class Chat extends CometActor with CometListener {
+  private var msgs: List[String] = Nil
 
- private var msgs: List[String] = Nil
+  def registerWith = ChatServer
 
- def registerWith = ChatServer
+  override def lowPriority = {
+    case m: List[String] => msgs = m; reRender(false)
+  }
 
- override def lowPriority = {
- case m: List[String] => msgs = m; reRender(false)
- }
-
- def render = {
- <div>
- <ul>
- {
- msgs.reverse.map(m => <li>{m}</li>)
- }
- </ul>
- <lift:form>
- {
- SHtml.text("", s => ChatServer ! s)
- }
- <input type="submit" value="Chat"/>
- </lift:form>
- </div>
- }
+  def render = {
+    <div>
+      <ul>
+        {msgs.reverse.map(m => <li>
+        {m}
+      </li>)}
+      </ul>
+      <lift:form>
+        {SHtml.text("", s => ChatServer ! s)}<input type="submit" value="Chat"/>
+      </lift:form>
+    </div>
+  }
 }

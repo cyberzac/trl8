@@ -42,15 +42,18 @@ object Twitter extends Logging {
   lazy val searchStream = httpReader.postStream(uri, "")
   implicit val formats = net.liftweb.json.DefaultFormats
 
+  def searchAndTranslate = {
+    searchAndAct(translateAndTweet)
+  }
 
-  def searchAndTranslate(): Unit = {
+  def searchAndAct(act: (String) => Unit): Unit = {
     val source = Source.fromInputStream(searchStream.getOrElse(return))
     for{tweet <- source.getLines
         if (!tweet.isEmpty)
-    } {translateAndTweet(tweet)}
+    } {act(tweet)}
   }
 
-  private def translateAndTweet(tweet: String): Unit = {
+  def translateAndTweet(tweet: String): Unit = {
     debug("search got:" + tweet)
     val json = parse(tweet)
     val user = (json \ "user" \ "screen_name").extract[String]

@@ -41,7 +41,15 @@
         </pluginRepository>
     </pluginRepositories>
 
+
     <dependencies>
+
+        <dependency>
+            <groupId>${parent.groupId}</groupId>
+            <artifactId>trl8</artifactId>
+            <version>${parent.version}</version>
+        </dependency>
+        
         <dependency>
             <groupId>net.liftweb</groupId>
             <artifactId>lift-mapper_2.8.0</artifactId>
