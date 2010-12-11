@@ -27,10 +27,18 @@ import se.cyberzac.log.Logging
  * Twitter translate and line
  *
  */
+
 object trl8 extends Application with Logging {
   override def main(args: Array[String]) {
     info("Hello twitter trl8")
-    Twitter searchAndTranslate
+    while (true) {
+      try
+      {
+        Twitter searchAndTranslate
+      } catch (Exception e) {
+        log.error("Ops! " + e.getMessage(), e)
+      }
+    }
   }
 
 }
