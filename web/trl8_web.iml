@@ -9,7 +9,6 @@
         <webroots>
           <root url="file://$USER_HOME$/IdeaProjects/TwitterTr/web/src/main/webapp" relative="/" />
         </webroots>
-        <context-artifact name="trl8_web:war exploded" />
       </configuration>
     </facet>
     <facet type="Scala" name="Scala">
@@ -25,6 +24,15 @@
             <option value="$MAVEN_REPOSITORY$/org/scala-lang/scala-library/2.8.0/scala-library-2.8.0.jar" />
           </array>
         </option>
+      </configuration>
+    </facet>
+    <facet type="scala" name="Scala">
+      <configuration>
+        <option name="compilerLibraryLevel" value="Project" />
+        <option name="compilerLibraryName" value="Maven: org.scala-lang:scala-compiler-bundle:2.8.0" />
+        <option name="compilerOptions" value="-target:jvm-1.5" />
+        <option name="maximumHeapSize" value="1024" />
+        <option name="vmOptions" value="-DpackageLinkDefs=file:///Users/zac/IdeaProjects/TwitterTr/web/target/packageLinkDefs.properties" />
       </configuration>
     </facet>
   </component>
