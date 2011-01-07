@@ -3,6 +3,13 @@
   <component name="BuildJarProjectSettings">
     <option name="BUILD_JARS_ON_MAKE" value="false" />
   </component>
+  <component name="CheckStyle-IDEA">
+    <option name="configuration">
+      <map>
+        <entry key="location-0" value="CLASSPATH:/sun_checks.xml:The default CheckStyle rules." />
+      </map>
+    </option>
+  </component>
   <component name="DependencyValidationManager">
     <option name="SKIP_IMPORT_STATEMENTS" value="false" />
   </component>
@@ -11,6 +18,8 @@
       <facet-type id="scala">
         <modules>
           <module name="trl8" />
+          <module name="trl8_web" />
+          <module name="web" />
         </modules>
       </facet-type>
       <facet-type id="Scala">
@@ -29,6 +38,9 @@
         </modules>
       </facet-type>
     </autodetection-disabled>
+  </component>
+  <component name="HudsonMonitorComponent">
+    <option name="timeOutTextField" value="30" />
   </component>
   <component name="IdProvider" IDEtalkID="83807AAB3EAC94287AFFF4003BAD5A06" />
   <component name="JavadocGenerationManager">
@@ -57,6 +69,9 @@
   </component>
   <component name="ProjectKey">
     <option name="state" value="project://default" />
+  </component>
+  <component name="ProjectResources">
+    <default-html-doctype>http://www.w3.org/1999/xhtml</default-html-doctype>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" assert-keyword="true" jdk-15="true" project-jdk-name="1.6" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
