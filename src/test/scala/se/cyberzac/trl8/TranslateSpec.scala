@@ -24,19 +24,19 @@ package se.cyberzac.trl8
 import org.specs._
 
 object TranslateSpec extends Specification {
-  val rawText = "#Hello #trl8 sv world"
+  val rawText = "#Hello #trl8 de world"
   val extractedText = "#Hello world"
-  val translatedText = Some("#Hej världen")
+  val translatedText = Some("#Hallo Welt")
 
   "Translate" should {
 
     "provide extractLangugageAndText" in {
       val Some((lang, text)) = Translate.extractLanguageAndText(rawText)
-      "that extracts desired language" in {lang must be equalTo ("sv")}
+      "that extracts desired language" in {lang must be equalTo ("de")}
       "that removes #trl8 sv from the text" in {text must be equalTo (extractedText)}
     }
 
-    "provide translateText that translates as specified" in {Translate.translateText(rawText) must be equalTo (translatedText)}
+    """provide translateText that translates  "#Hello #trl8 de world" to "#Hallo Welt""" in {Translate.translateText(rawText) must be equalTo (translatedText)}
 
   }
 }
