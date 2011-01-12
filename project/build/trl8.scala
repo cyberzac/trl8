@@ -4,7 +4,7 @@ class trl8Project(info: ProjectInfo) extends DefaultProject(info) {
   //val mavenLocal = "Local Maven Repository" at "file://"+Path.userHome+"/.m2/repository"
 
   val junit = "junit" % "junit" % "4.7" % "test"
-  val testng = "org.testng" % "testng" % "5.12.1" % "test"
+  val testng = "org.testng" % "testng" % "5.8" % "test"
   val specs = "org.scala-tools.testing" % "specs_2.8.0" % "1.6.5" % "test"
   val slf4j_version = "1.6.1"
   val slf4j = "org.slf4j" % "slf4j-api" % slf4j_version
