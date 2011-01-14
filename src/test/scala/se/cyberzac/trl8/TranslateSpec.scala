@@ -22,8 +22,10 @@
 package se.cyberzac.trl8
 
 import org.specs._
+import runner.ScalaTest
 
-object TranslateSpec extends Specification {
+
+class TranslateSpec extends Specification with ScalaTest {
   val rawText = "#Hello #trl8 de world"
   val extractedText = "#Hello world"
   val translatedText = Some("#Hallo Welt")
