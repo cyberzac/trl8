@@ -27,10 +27,16 @@ import se.cyberzac.log.Logging
  * Twitter translate and line
  *
  */
-object trl8 extends Application with Logging {
+object trl8 extends Application with ApacheHttpClientFactoryComponent with GoogleTranslateComponent with TwitterComponentImpl with Logging {
+  val httpClientFactory = new ApacheHttpClientFactory
+  val translate = new GoogleTranslate
+  val twitter = new TwitterImpl
+
+
   override def main(args: Array[String]) {
     info("Hello twitter trl8")
-    Twitter searchAndTranslate
+    twitter trackAndTranslate
   }
+
 
 }

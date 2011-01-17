@@ -2,7 +2,7 @@
  *
  * User: zac
  * Date: 2010-jun-09
- * Time: 10:55:23
+ * Time: 16:01:20
  *
  * Copyright © 2010 Martin Zachrison
  *
@@ -21,24 +21,24 @@
 
 package se.cyberzac.trl8
 
-import org.specs._
-import runner.ScalaTest
+import se.cyberzac.log.Logging
+import net.liftweb.json.JsonParser._
+import net.liftweb.util.Helpers
 
 
-class TranslateSpec extends Specification with ScalaTest {
-  val rawText = "#Hello #trl8 de world"
-  val extractedText = "#Hello world"
-  val translatedText = Some("#Hallo Welt")
+trait TranslateComponent {
 
-  "Translate" should {
+  val translate: Translate
 
-    "provide extractLangugageAndText" in {
-      val Some((lang, text)) = Translate.extractLanguageAndText(rawText)
-      "that extracts desired language" in {lang must be equalTo ("de")}
-      "that removes #trl8 sv from the text" in {text must be equalTo (extractedText)}
-    }
+  trait Translate {
 
-    """provide translateText that translates  "#Hello #trl8 de world" to "#Hallo Welt""" in {Translate.translateText(rawText) must be equalTo (translatedText)}
+    def extractLanguageAndText(text: String): Option[(String, String)]
 
+    def translateText(rawText: String): Option[String]
+
+    def identifyLang(text: String): Option[String]
   }
+
 }
+
+
