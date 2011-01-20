@@ -8,9 +8,9 @@ import java.io.InputStream
  */
 trait HttpClient {
 
-  def get(url: String): String
+  def get(url: String): Option[String]
 
-  def post(url: String, body: String): String
+  def post(url: String, body: String): Option[String]
 
   def postStream(url: URI, body: String): Option[InputStream]
 

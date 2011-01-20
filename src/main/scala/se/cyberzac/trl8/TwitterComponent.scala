@@ -1,4 +1,3 @@
-
 package se.cyberzac.trl8
 
 import net.liftweb.json.JsonParser._
@@ -16,7 +15,7 @@ trait TwitterComponent {
     /**
      *  Track a keyword, translate and retweet
      */
-    def trackAndTranslate(): Unit
+    def trackAndTranslate(trackWord: String): Unit
 
     /**
      * Tweet the text
@@ -28,25 +27,21 @@ trait TwitterComponent {
 }
 
 trait TwitterComponentImpl extends TwitterComponent {
-  this: TwitterComponent with HttpClientFactoryComponent  with TranslateComponent =>
 
-  class TwitterImpl extends Twitter with Logging {
-    /* OAuth stuff */
-    val ConsumerKey = "1uNTJAjT2JDQ44DcF1qZQ"
-    val ConsumerSecret = "h5KcPmhZiazErTHf25hWqxyVsN9YBplY7qa9mzkJE"
-    val accessToken = "148650405-AQIH2L6mhA3BUlctYf4N0HFdFyrwItWRi3TarY9y"
-    val tokenSecret = "alkfZfxURIh8enptBngADxiqI2OOC3rV6xktcZixgU"
-    val consumer = new CommonsHttpOAuthConsumer(ConsumerKey, ConsumerSecret)
-    consumer.setTokenWithSecret(accessToken, tokenSecret)
+  this: TwitterComponent with HttpClientFactoryComponent with TranslateComponent =>
 
-    val uri = new URI("http://stream.twitter.com/1/statuses/filter.json?track=trl8")
-    val httpReader = httpClientFactory.createHttpClient(uri.getHost, "trl8", "deheafy")
-    val httpWriter = httpClientFactory.createHttpClient(consumer)
-    lazy val searchStream = httpReader.postStream(uri, "")
+  class TwitterImpl(val user: String, val password: String, val oauthConsumer: CommonsHttpOAuthConsumer) extends Twitter with Logging {
+
+    val httpWriter = httpClientFactory.createHttpClient(oauthConsumer)
+    val trackUrl = "http://stream.twitter.com/1/statuses/filter.json?track="
+    val statusUrl = "http://api.twitter.com/1/statuses/update.xml?status="
     implicit val formats = net.liftweb.json.DefaultFormats
 
 
-    def trackAndTranslate(): Unit = {
+    def trackAndTranslate(trackWord: String): Unit = {
+      val uri = new URI(trackUrl + trackWord)
+      val httpReader = httpClientFactory.createHttpClient(uri.getHost, user, password)
+      lazy val searchStream = httpReader.postStream(uri, "")
       val source = Source.fromInputStream(searchStream.getOrElse(return))
       for {tweet <- source.getLines
            if (!tweet.isEmpty)
@@ -72,14 +67,13 @@ trait TwitterComponentImpl extends TwitterComponent {
     def tweetText(text: String): Unit = {
       debug("Tweeting: {}", text)
       val xml = <status>
-        <status>
-          {text}
-        </status>
-      </status>
-      httpWriter.post("http://api.twitter.com/1/statuses/update.xml?status=" + Helpers.urlEncode(text), xml.toString)
-      debug("Translated tweeted ok")
-    }
+        <status>{text}</status>
+      </status> // yes the status element is to be double
+        httpWriter.post(statusUrl + Helpers.urlEncode(text), xml.toString)
 
+    debug("Translated tweeted ok")
   }
+
+}
 
 }

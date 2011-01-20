@@ -15,7 +15,7 @@ class trl8Project(info: ProjectInfo) extends DefaultProject(info) {
   val slf4j_log4j14 = "org.slf4j" % "slf4j-log4j12" % slf4j_version
   //val slf4j_simple = "org.slf4j" % "slf4j-simple" % slf4j_version
 
-  val commons_httpclient = "org.apache.httpcomponents" % "httpclient" % "4.0.1"
+  val commons_httpclient = "org.apache.httpcomponents" % "httpclient" % "4.0.1"  withSources()
 
   val lift_version = "2.2"
   val lift_json = "net.liftweb" % "lift-json_2.8.0" % lift_version

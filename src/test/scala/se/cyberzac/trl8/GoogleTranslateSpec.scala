@@ -31,8 +31,8 @@ class GoogleTranslateSpec extends Specification with ScalaTest with TestEnvironm
 
   httpClientFactory.createHttpClient() returns httpClient
 
-  httpClient.get("http://ajax.googleapis.com/ajax/services/language/translate?v=1.0&q=%23Hello+world&langpair=en%7Cde") returns """{"responseData": {"translatedText":"# Hallo Welt"}, "responseDetails": null, "responseStatus": 200}"""
-  httpClient.get("http://ajax.googleapis.com/ajax/services/language/detect?v=1.0&q=%23Hello+world") returns """{"responseData": {"language":"en","isReliable":false,"confidence":0.114892714}, "responseDetails": null, "responseStatus": 200}"""
+  httpClient.get("http://ajax.googleapis.com/ajax/services/language/translate?v=1.0&q=%23Hello+world&langpair=en%7Cde") returns Some("""{"responseData": {"translatedText":"# Hallo Welt"}, "responseDetails": null, "responseStatus": 200}""")
+  httpClient.get("http://ajax.googleapis.com/ajax/services/language/detect?v=1.0&q=%23Hello+world") returns Some("""{"responseData": {"language":"en","isReliable":false,"confidence":0.114892714}, "responseDetails": null, "responseStatus": 200}""")
 
 
   val rawText = "#Hello #trl8 de world"

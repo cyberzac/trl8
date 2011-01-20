@@ -63,7 +63,7 @@ trait GoogleTranslateComponent extends TranslateComponent {
     }
 
     private def extractJsonField(url: String, field: String): Option[String] = {
-      val json = httpClient.get(url)
+      val json = httpClient.get(url).getOrElse(return None)
       val parsed = parse(json)
       val status = (parsed \\ "responseStatus").extract[String]
       if (status == "200") {

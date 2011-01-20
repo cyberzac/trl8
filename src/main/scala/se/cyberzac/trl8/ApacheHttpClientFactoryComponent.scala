@@ -18,27 +18,37 @@ import se.cyberzac.log.Logging
  */
 trait ApacheHttpClientFactoryComponent extends HttpClientFactoryComponent {
 
-  def createDefaultHttpClientFactory(): DefaultHttpClient = new DefaultHttpClient()
+  /**
+   * Needed to be able to Mock since the DefaultHttpClient has final methods
+   */
+  class InternalApacheHttpClient {
+    val defaultHttpClient = new DefaultHttpClient()
+    def execute(request: HttpUriRequest) = defaultHttpClient.execute(request)
+    def getCredentialsProvider() = defaultHttpClient.getCredentialsProvider
+
+  }
+
+  def createDefaultHttpClientFactory(): InternalApacheHttpClient = new InternalApacheHttpClient
 
   class ApacheHttpClientFactory extends HttpClientFactory {
 
-    def createHttpClient(oauthConsumer: CommonsHttpOAuthConsumer): HttpClient = ApacheHttpClient(oauthConsumer)
+    def createHttpClient(oauthConsumer: CommonsHttpOAuthConsumer): HttpClient = ApacheHttpClientWrapper(oauthConsumer)
 
-    def createHttpClient(domain: String, user: String, password: String): HttpClient = ApacheHttpClient(domain, user, password)
+    def createHttpClient(domain: String, user: String, password: String): HttpClient = ApacheHttpClientWrapper(domain, user, password)
 
-    def createHttpClient(): HttpClient = ApacheHttpClient()
+    def createHttpClient(): HttpClient = ApacheHttpClientWrapper()
   }
 
 
-  private object ApacheHttpClient {
+  private object ApacheHttpClientWrapper {
     this: HttpClient =>
 
-    def apply() = new ApacheHttpClient
+    def apply() = new ApacheHttpClientWrapper
 
-    def apply(oauthConsumer: CommonsHttpOAuthConsumer) = new ApacheHttpClient((method: HttpUriRequest) => oauthConsumer.sign(method))
+    def apply(oauthConsumer: CommonsHttpOAuthConsumer) = new ApacheHttpClientWrapper((method: HttpUriRequest) => oauthConsumer.sign(method))
 
     def apply(domain: String, user: String, password: String) = {
-      val http = new ApacheHttpClient()
+      val http = new ApacheHttpClientWrapper()
       http.client.getCredentialsProvider.setCredentials(
         new AuthScope(domain, AuthScope.ANY_PORT),
         new UsernamePasswordCredentials(user, password)
@@ -48,24 +58,24 @@ trait ApacheHttpClientFactoryComponent extends HttpClientFactoryComponent {
   }
 
 
-  private class ApacheHttpClient(val preExecute: (HttpUriRequest) => Unit) extends HttpClient with Logging {
-    val client = createDefaultHttpClientFactory()
+  private class ApacheHttpClientWrapper(val preExecute: (HttpUriRequest) => Unit) extends HttpClient with Logging {
+    lazy val client = createDefaultHttpClientFactory()
 
     def this() = {
       this ((request: HttpUriRequest) => {})
     }
 
 
-    def get(url: String): String = {
+    def get(url: String):Option[String] = {
       val method = new HttpGet(url)
-      val stream = execute(method).getOrElse(return "")
-      Source.fromInputStream(stream).getLines.mkString
+      val stream = execute(method).getOrElse(return None)
+      Some(Source.fromInputStream(stream).getLines.mkString)
     }
 
 
-    def post(url: String, body: String): String = {
-      val stream = postStream(new URI(url), body).getOrElse(return "")
-      Source.fromInputStream(stream).getLines.mkString
+    def post(url: String, body: String): Option[String] = {
+      val stream = postStream(new URI(url), body).getOrElse(return None)
+      Some(Source.fromInputStream(stream).getLines.mkString)
     }
 
 
